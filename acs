@@ -9,6 +9,9 @@ templates = path / 'templates'
 config = terraform.Configuration(path / 'tf')
 config.add(nomad.Provider('http://10.42.2.1:4646'))
 
+vmck = nomad.Job('vmck', jobspec=templates / 'vmck.nomad')
+config.add(vmck)
+
 interface = nomad.Job('acs-interface', jobspec=templates / 'interface.nomad')
 config.add(interface)
 
