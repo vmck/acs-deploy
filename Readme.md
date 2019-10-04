@@ -11,5 +11,6 @@ Deploy [vmck] and [acs-interface] on the [ACS server].
 
 ```shell
 pipenv install
+./acs init
 ./acs apply
 ```
