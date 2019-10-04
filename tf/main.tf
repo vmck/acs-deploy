@@ -6,11 +6,11 @@ provider "nomad" {
 
 # <nomad.Job 'vmck'>
 resource "nomad_job" "vmck" {
-  jobspec = "${file("${path.module}/../templates/vmck.nomad")}"
+  jobspec = "${file("${path.module}/nomad_jobs/vmck.hcl")}"
 }
 
 # <nomad.Job 'acs-interface'>
 resource "nomad_job" "acs-interface" {
-  jobspec = "${file("${path.module}/../templates/interface.nomad")}"
+  jobspec = "${file("${path.module}/nomad_jobs/acs-interface.hcl")}"
 }
 
