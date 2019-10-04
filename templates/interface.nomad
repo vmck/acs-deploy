@@ -63,10 +63,6 @@ job "acs-interface" {
       config {
         image = "vmck/acs-interface:interface"
         dns_servers = ["${attr.unique.network.ip-address}"]
-        command = "/bin/bash"
-        args = [
-          "-c", "echo 10.42.1.13 $LDAP_SERVER_URL >> /etc/hosts; ./runinterface"
-        ]
         volumes = [
           "${meta.volumes}/acs-interface:/opt/interface/data",
         ]
