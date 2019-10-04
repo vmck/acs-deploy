@@ -7,8 +7,8 @@ acs = '10.42.2.1'
 dep = Deployment(__name__)
 
 dep.add(nomad.Provider, f'http://{acs}:4646')
-dep.add(nomad.Job, name='vmck', jobspec='templates/vmck.nomad')
-dep.add(nomad.Job, name='acs-interface', jobspec='templates/interface.nomad')
+dep.add(nomad.Job, jobspec='templates/vmck.nomad')
+dep.add(nomad.Job, jobspec='templates/interface.nomad')
 
 if __name__ == '__main__':
     dep.cli()
