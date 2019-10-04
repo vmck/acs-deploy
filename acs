@@ -1,0 +1,6 @@
+#!/usr/bin/env python3
+
+from oregano import terraform
+
+config = terraform.Configuration()
+config.apply()

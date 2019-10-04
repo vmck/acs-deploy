@@ -1,0 +1,23 @@
+{
+    "_meta": {
+        "hash": {
+            "sha256": "dd9a459505cc80ffcda8371f7043c69707a73e0e084a2b65df706ec544be34a6"
+        },
+        "pipfile-spec": 6,
+        "requires": {},
+        "sources": [
+            {
+                "name": "pypi",
+                "url": "https://pypi.org/simple",
+                "verify_ssl": true
+            }
+        ]
+    },
+    "default": {
+        "oregano": {
+            "editable": true,
+            "path": "./../oregano"
+        }
+    },
+    "develop": {}
+}
