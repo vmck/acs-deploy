@@ -1,19 +1,14 @@
 #!/usr/bin/env python3
 
-from pathlib import Path
-from oregano import terraform, nomad, cli
+from oregano import Deployment, nomad
 
-path = Path(__file__).resolve().parent
-templates = path / 'templates'
+acs = '10.42.2.1'
 
-config = terraform.Configuration(path / 'tf')
-config.add(nomad.Provider('http://10.42.2.1:4646'))
+dep = Deployment(__name__)
 
-vmck = nomad.Job('vmck', jobspec=templates / 'vmck.nomad')
-config.add(vmck)
-
-interface = nomad.Job('acs-interface', jobspec=templates / 'interface.nomad')
-config.add(interface)
+dep.add(nomad.Provider, f'http://{acs}:4646')
+dep.add(nomad.Job, name='vmck', jobspec='templates/vmck.nomad')
+dep.add(nomad.Job, name='acs-interface', jobspec='templates/interface.nomad')
 
 if __name__ == '__main__':
-    cli.main(config)
+    dep.cli()
