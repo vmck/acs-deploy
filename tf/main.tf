@@ -1,3 +1,12 @@
+terraform {
+  # <consul.Backend '10.42.2.1:8500'@'terraform_state'>
+  backend "consul" {
+    address = "10.42.2.1:8500"
+    scheme = "http"
+    path = "terraform_state"
+  }
+}
+
 # <nomad.Provider 'http://10.42.2.1:4646'>
 provider "nomad" {
   address = "http://10.42.2.1:4646"
