@@ -18,3 +18,7 @@ resource "nomad_job" "vmck" {
 resource "nomad_job" "acs-interface" {
   jobspec = "${file("${path.module}/nomad_jobs/acs-interface.hcl")}"
 }
+
+resource "nomad_job" "ingress" {
+  jobspec = "${file("${path.module}/nomad_jobs/ingress.hcl")}"
+}
