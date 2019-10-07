@@ -23,12 +23,14 @@ job "acs-interface" {
       }
       template {
         data = <<-EOF
-          MINIO_ACCESS_KEY = "1234"
-          MINIO_SECRET_KEY = "123456789"
-          MINIO_BROWSER = "on"
-          EOF
-          destination = "local/config.env"
-          env = true
+          {{- with secret "kv/minio" -}}
+            MINIO_ACCESS_KEY = "{{ .Data.access_key }}"
+            MINIO_SECRET_KEY = "{{ .Data.secret_key }}"
+            MINIO_BROWSER = "on"
+          {{- end -}}
+        EOF
+        destination = "local/config.env"
+        env = true
       }
       resources {
         memory = 200
@@ -61,7 +63,7 @@ job "acs-interface" {
       }
       driver = "docker"
       config {
-        image = "vmck/acs-interface:interface"
+        image = "vmck/acs-interface:0.1.0"
         dns_servers = ["${attr.unique.network.ip-address}"]
         volumes = [
           "${meta.volumes}/acs-interface:/opt/interface/data",
@@ -76,6 +78,7 @@ job "acs-interface" {
           SECRET_KEY = "TODO:ChangeME!!!"
           HOSTNAME = "*"
           ACS_INTERFACE_ADDRESS = "http://{{ env "NOMAD_ADDR_http" }}"
+          ACS_USER_WHITELIST = '{{ key "acs_interface/whitelist" }}'
           EOF
           destination = "local/interface.env"
           env = true
