@@ -1,9 +1,0 @@
-[[source]]
-name = "pypi"
-url = "https://pypi.org/simple"
-verify_ssl = true
-
-[dev-packages]
-
-[packages]
-oregano = {editable = true,git = "https://github.com/liquidinvestigations/oregano",ref = "master"}
