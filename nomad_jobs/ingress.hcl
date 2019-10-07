@@ -83,12 +83,12 @@ job "ingress" {
       }
 
       service {
-        name = "traefik-http"
+        name = "ingress-http"
         port = "http"
       }
 
       service {
-        name = "traefik-https"
+        name = "ingress-https"
         port = "https"
         check {
           name = "https"
@@ -106,7 +106,7 @@ job "ingress" {
       }
 
       service {
-        name = "traefik-admin"
+        name = "ingress-admin"
         port = "admin"
         check {
           name = "http"

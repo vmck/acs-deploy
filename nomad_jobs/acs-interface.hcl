@@ -143,6 +143,10 @@ job "acs-interface" {
           interval = "5s"
           timeout = "5s"
         }
+        tags = [
+          "ingress.enable=true",
+          "ingress.frontend.rule=Host:v2.vmchecker.cs.pub.ro",
+        ]
       }
     }
   }
