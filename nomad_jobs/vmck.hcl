@@ -89,7 +89,7 @@ job "vmck" {
       }
       driver = "docker"
       config {
-        image = "vmck/vmck:0.4.5"
+        image = "vmck/vmck:constrain-to-workers"
         hostname = "${attr.unique.hostname}"
         dns_servers = ["${attr.unique.network.ip-address}"]
         volumes = [
