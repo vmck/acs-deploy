@@ -1,0 +1,11 @@
+#!/bin/bash -e
+
+cd "$( dirname "${BASH_SOURCE[0]}" )"/..
+
+time=$(date +%Y-%m-%dT%H:%M:%S)
+repo=consul-snapshots
+filename=$repo/$time.tgz
+
+set -x
+mkdir -p $repo
+curl http://10.42.2.1:8500/v1/snapshot?dc=dc1 -o "$filename"
