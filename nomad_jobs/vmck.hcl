@@ -2,6 +2,11 @@ job "vmck" {
   datacenters = ["dc1"]
   type = "service"
 
+  constraint {
+    attribute = "${meta.vmck_worker}"
+    operator = "is_set"
+  }
+
   group "imghost" {
     task "nginx" {
       constraint {

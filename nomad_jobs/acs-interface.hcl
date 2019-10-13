@@ -2,6 +2,11 @@ job "acs-interface" {
   datacenters = ["dc1"]
   type = "service"
 
+  constraint {
+    attribute = "${meta.vmck_worker}"
+    operator = "is_set"
+  }
+
   group "storage" {
     task "minio" {
       constraint {
