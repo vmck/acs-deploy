@@ -201,7 +201,7 @@ job "vmck" {
       }
       resources {
         memory = 450
-        cpu = 350
+        cpu = 450
         network {
           port "http" {
             static = 10000
