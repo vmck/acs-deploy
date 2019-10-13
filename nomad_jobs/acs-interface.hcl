@@ -60,6 +60,56 @@ job "acs-interface" {
     }
   }
 
+  group "database" {
+    task "postgres" {
+      constraint {
+        attribute = "${meta.volumes}"
+        operator  = "is_set"
+      }
+
+      driver = "docker"
+      config {
+        image = "postgres:12.0-alpine"
+        dns_servers = ["${attr.unique.network.ip-address}"]
+        volumes = [
+          "${meta.volumes}/database/postgres/data:/var/lib/postgresql/data",
+        ]
+        port_map {
+          pg = 5432
+        }
+      }
+      template {
+        data = <<-EOF
+          POSTGRES_DB = "interface"
+          {{- with secret "kv/postgres" }}
+            POSTGRES_USER = {{ .Data.username }}
+            POSTGRES_PASSWORD = {{ .Data.password }}
+          {{- end }}
+          EOF
+        destination = "local/postgres.env"
+        env = true
+      }
+      resources {
+        memory = 350
+        network {
+          mbits = 1
+          port "pg" {}
+        }
+      }
+      service {
+        name = "database-postgres-interface"
+        port = "pg"
+        check {
+          name = "tcp"
+          initial_status = "critical"
+          type = "tcp"
+          interval = "5s"
+          timeout = "5s"
+        }
+      }
+    }
+  }
+
   group "acs-interface" {
     task "acs-interface" {
       constraint {
@@ -68,7 +118,7 @@ job "acs-interface" {
       }
       driver = "docker"
       config {
-        image = "vmck/acs-interface:0.1.2"
+        image = "vmck/acs-interface:postgres"
         dns_servers = ["${attr.unique.network.ip-address}"]
         volumes = [
           "${meta.volumes}/acs-interface:/opt/interface/data",
@@ -115,6 +165,26 @@ job "acs-interface" {
           {{- end -}}
           EOF
           destination = "local/minio.env"
+          env = true
+      }
+      template {
+        data = <<-EOF
+          {{- with secret "kv/postgres" }}
+            POSTGRES_USER = {{ .Data.username }}
+            POSTGRES_PASSWORD = {{ .Data.password }}
+          {{- end }}
+          EOF
+          destination = "local/postgres.env"
+          env = true
+      }
+      template {
+        data = <<-EOF
+          {{- range service "database-postgres-interface" -}}
+            POSTGRES_ADDRESS = "{{ .Address }}"
+            POSTGRES_PORT = "{{ .Port }}"
+          {{- end }}
+          EOF
+          destination = "local/postgres-api.env"
           env = true
       }
       template {
