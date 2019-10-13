@@ -25,8 +25,8 @@ job "vmck" {
         }
       }
       resources {
-        memory = 80
-        cpu = 200
+        memory = 150
+        cpu = 1000
         network {
           port "http" {
             static = 10001
@@ -52,7 +52,7 @@ job "vmck" {
             sendfile on;
             sendfile_max_chunk 4m;
             aio threads;
-            keepalive_timeout 65;
+            keepalive_timeout 100;
             server {
               listen 80;
               server_name  _;
@@ -79,8 +79,8 @@ job "vmck" {
           initial_status = "critical"
           type = "http"
           path = "/healthcheck"
-          interval = "5s"
-          timeout = "5s"
+          interval = "10s"
+          timeout = "20s"
         }
       }
     }
