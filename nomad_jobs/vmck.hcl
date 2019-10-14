@@ -2,6 +2,11 @@ job "vmck" {
   datacenters = ["dc1"]
   type = "service"
 
+  constraint {
+    attribute = "${meta.vmck_worker}"
+    operator = "is_set"
+  }
+
   group "imghost" {
     task "nginx" {
       constraint {
@@ -47,7 +52,7 @@ job "vmck" {
             sendfile on;
             sendfile_max_chunk 4m;
             aio threads;
-            keepalive_timeout 65;
+            keepalive_timeout 100;
             server {
               listen 80;
               server_name  _;
@@ -69,11 +74,55 @@ job "vmck" {
       service {
         name = "vmck-imghost"
         port = "http"
+      }
+    }
+  }
+
+  group "database" {
+    task "postgres" {
+      constraint {
+        attribute = "${meta.volumes}"
+        operator  = "is_set"
+      }
+
+      driver = "docker"
+      config {
+        image = "postgres:12.0-alpine"
+        dns_servers = ["${attr.unique.network.ip-address}"]
+        volumes = [
+          "${meta.volumes}/database-vmck/postgres/data:/var/lib/postgresql/data",
+        ]
+        port_map {
+          pg = 5432
+        }
+      }
+      template {
+        data = <<-EOF
+          POSTGRES_DB = "vmck"
+          {{- with secret "kv/postgres" }}
+            POSTGRES_USER = {{ .Data.username }}
+            POSTGRES_PASSWORD = {{ .Data.password }}
+          {{- end }}
+          EOF
+        destination = "local/postgres.env"
+        env = true
+      }
+      resources {
+        memory = 350
+        network {
+          mbits = 1
+          port "pg" {
+            static = 5431
+          }
+        }
+      }
+      service {
+        name = "database-postgres-vmck"
+        port = "pg"
         check {
-          name = "vmck-imghost nginx alive on http"
+          name = "tcp"
           initial_status = "critical"
-          type = "http"
-          path = "/healthcheck"
+          type = "tcp"
           interval = "5s"
           timeout = "5s"
         }
@@ -89,7 +138,7 @@ job "vmck" {
       }
       driver = "docker"
       config {
-        image = "vmck/vmck:constrain-to-workers"
+        image = "vmck/vmck:postgres"
         hostname = "${attr.unique.hostname}"
         dns_servers = ["${attr.unique.network.ip-address}"]
         volumes = [
@@ -122,9 +171,30 @@ job "vmck" {
           destination = "local/vmck-imghost.env"
           env = true
       }
+      template {
+        data = <<-EOF
+          {{- with secret "kv/postgres" }}
+            POSTGRES_USER = {{ .Data.username }}
+            POSTGRES_PASSWORD = {{ .Data.password }}
+          {{- end }}
+          EOF
+        destination = "local/postgres.env"
+        env = true
+      }
+      template {
+        data = <<-EOF
+          {{- range service "database-postgres-vmck" -}}
+            POSTGRES_DB = "vmck"
+            POSTGRES_ADDRESS = "{{ .Address }}"
+            POSTGRES_PORT = "{{ .Port }}"
+          {{- end }}
+          EOF
+        destination = "local/postgres-api.env"
+        env = true
+      }
       resources {
         memory = 450
-        cpu = 350
+        cpu = 450
         network {
           port "http" {
             static = 10000

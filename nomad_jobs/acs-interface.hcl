@@ -2,6 +2,11 @@ job "acs-interface" {
   datacenters = ["dc1"]
   type = "service"
 
+  constraint {
+    attribute = "${meta.vmck_worker}"
+    operator = "is_set"
+  }
+
   group "storage" {
     task "minio" {
       constraint {
@@ -10,7 +15,7 @@ job "acs-interface" {
       }
       driver = "docker"
       config {
-        image = "minio/minio:RELEASE.2019-08-29T00-25-01Z"
+        image = "minio/minio:RELEASE.2019-10-12T01-39-57Z"
         dns_servers = ["${attr.unique.network.ip-address}"]
         command = "server"
         args = ["/data"]
@@ -55,6 +60,56 @@ job "acs-interface" {
     }
   }
 
+  group "database" {
+    task "postgres" {
+      constraint {
+        attribute = "${meta.volumes}"
+        operator  = "is_set"
+      }
+
+      driver = "docker"
+      config {
+        image = "postgres:12.0-alpine"
+        dns_servers = ["${attr.unique.network.ip-address}"]
+        volumes = [
+          "${meta.volumes}/database/postgres/data:/var/lib/postgresql/data",
+        ]
+        port_map {
+          pg = 5432
+        }
+      }
+      template {
+        data = <<-EOF
+          POSTGRES_DB = "interface"
+          {{- with secret "kv/postgres" }}
+            POSTGRES_USER = {{ .Data.username }}
+            POSTGRES_PASSWORD = {{ .Data.password }}
+          {{- end }}
+          EOF
+        destination = "local/postgres.env"
+        env = true
+      }
+      resources {
+        memory = 350
+        network {
+          mbits = 1
+          port "pg" {}
+        }
+      }
+      service {
+        name = "database-postgres-interface"
+        port = "pg"
+        check {
+          name = "tcp"
+          initial_status = "critical"
+          type = "tcp"
+          interval = "5s"
+          timeout = "5s"
+        }
+      }
+    }
+  }
+
   group "acs-interface" {
     task "acs-interface" {
       constraint {
@@ -63,7 +118,7 @@ job "acs-interface" {
       }
       driver = "docker"
       config {
-        image = "vmck/acs-interface:0.1.1"
+        image = "vmck/acs-interface:postgres"
         dns_servers = ["${attr.unique.network.ip-address}"]
         volumes = [
           "${meta.volumes}/acs-interface:/opt/interface/data",
@@ -74,11 +129,11 @@ job "acs-interface" {
       }
       template {
         data = <<-EOF
-          DEBUG = true
           SECRET_KEY = "TODO:ChangeME!!!"
           HOSTNAME = "*"
           ACS_INTERFACE_ADDRESS = "http://{{ env "NOMAD_ADDR_http" }}"
           ACS_USER_WHITELIST = '{{ key "acs_interface/whitelist" }}'
+          MANAGER_TAG = "artifact"
           EOF
           destination = "local/interface.env"
           env = true
@@ -114,6 +169,27 @@ job "acs-interface" {
       }
       template {
         data = <<-EOF
+          {{- with secret "kv/postgres" }}
+            POSTGRES_USER = {{ .Data.username }}
+            POSTGRES_PASSWORD = {{ .Data.password }}
+          {{- end }}
+          EOF
+          destination = "local/postgres.env"
+          env = true
+      }
+      template {
+        data = <<-EOF
+          {{- range service "database-postgres-interface" -}}
+            POSTGRES_DB = "interface"
+            POSTGRES_ADDRESS = "{{ .Address }}"
+            POSTGRES_PORT = "{{ .Port }}"
+          {{- end }}
+          EOF
+          destination = "local/postgres-api.env"
+          env = true
+      }
+      template {
+        data = <<-EOF
           {{- with secret "kv/ldap" -}}
             LDAP_SERVER_URL = "{{ .Data.server_address }}"
             LDAP_SERVER_URI = "ldaps://{{ .Data.server_address }}:{{ .Data.server_port }}"
@@ -128,7 +204,7 @@ job "acs-interface" {
       }
       resources {
         memory = 300
-        cpu = 200
+        cpu = 500
         network {
           port "http" {
             static = 10002
