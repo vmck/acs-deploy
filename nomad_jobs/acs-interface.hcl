@@ -133,6 +133,7 @@ job "acs-interface" {
           HOSTNAME = "*"
           ACS_INTERFACE_ADDRESS = "http://{{ env "NOMAD_ADDR_http" }}"
           ACS_USER_WHITELIST = '{{ key "acs_interface/whitelist" }}'
+          MANAGER_TAG = "artifact"
           EOF
           destination = "local/interface.env"
           env = true
