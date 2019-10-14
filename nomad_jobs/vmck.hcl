@@ -159,8 +159,8 @@ job "vmck" {
           BACKEND = "qemu"
           QEMU_CPU_MHZ = 3000
           EOF
-          destination = "local/vmck.env"
-          env = true
+        destination = "local/vmck.env"
+        env = true
       }
       template {
         data = <<-EOF
@@ -168,8 +168,8 @@ job "vmck" {
             QEMU_IMAGE_PATH_PREFIX = "http://{{.Address}}:{{.Port}}"
           {{- end }}
           EOF
-          destination = "local/vmck-imghost.env"
-          env = true
+        destination = "local/vmck-imghost.env"
+        env = true
       }
       template {
         data = <<-EOF
