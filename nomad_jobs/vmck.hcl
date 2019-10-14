@@ -184,6 +184,7 @@ job "vmck" {
       template {
         data = <<-EOF
           {{- range service "database-postgres-vmck" -}}
+            POSTGRES_DB = "vmck"
             POSTGRES_ADDRESS = "{{ .Address }}"
             POSTGRES_PORT = "{{ .Port }}"
           {{- end }}

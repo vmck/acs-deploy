@@ -180,6 +180,7 @@ job "acs-interface" {
       template {
         data = <<-EOF
           {{- range service "database-postgres-interface" -}}
+            POSTGRES_DB = "interface"
             POSTGRES_ADDRESS = "{{ .Address }}"
             POSTGRES_PORT = "{{ .Port }}"
           {{- end }}
