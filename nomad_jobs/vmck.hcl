@@ -138,7 +138,7 @@ job "vmck" {
       }
       driver = "docker"
       config {
-        image = "vmck/vmck:postgres"
+        image = "vmck/vmck:0.5.0"
         hostname = "${attr.unique.hostname}"
         dns_servers = ["${attr.unique.network.ip-address}"]
         volumes = [
@@ -158,6 +158,7 @@ job "vmck" {
           VMCK_URL = 'http://{{ env "NOMAD_ADDR_http" }}'
           BACKEND = "qemu"
           QEMU_CPU_MHZ = 3000
+          CHECK_SSH_SIGNATURE_TIMEOUT = "1"
           EOF
         destination = "local/vmck.env"
         env = true
