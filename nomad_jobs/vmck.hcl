@@ -138,7 +138,7 @@ job "vmck" {
       }
       driver = "docker"
       config {
-        image = "vmck/vmck:0.5.0"
+        image = "vmck/vmck:postgres"
         hostname = "${attr.unique.hostname}"
         dns_servers = ["${attr.unique.network.ip-address}"]
         volumes = [
@@ -150,6 +150,7 @@ job "vmck" {
       }
       template {
         data = <<-EOF
+          DEBUG = "true"
           SECRET_KEY = "TODO:ChangeME!!!"
           HOSTNAME = "*"
           SSH_USERNAME = "vagrant"
