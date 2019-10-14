@@ -25,8 +25,8 @@ job "vmck" {
         }
       }
       resources {
-        memory = 150
-        cpu = 1000
+        memory = 80
+        cpu = 200
         network {
           port "http" {
             static = 10001
@@ -74,14 +74,6 @@ job "vmck" {
       service {
         name = "vmck-imghost"
         port = "http"
-        check {
-          name = "vmck-imghost nginx alive on http"
-          initial_status = "critical"
-          type = "http"
-          path = "/healthcheck"
-          interval = "10s"
-          timeout = "20s"
-        }
       }
     }
   }
