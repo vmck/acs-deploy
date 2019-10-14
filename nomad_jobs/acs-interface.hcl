@@ -129,7 +129,6 @@ job "acs-interface" {
       }
       template {
         data = <<-EOF
-          DEBUG = true
           SECRET_KEY = "TODO:ChangeME!!!"
           HOSTNAME = "*"
           ACS_INTERFACE_ADDRESS = "http://{{ env "NOMAD_ADDR_http" }}"
