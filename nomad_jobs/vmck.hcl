@@ -98,8 +98,8 @@ job "vmck" {
       }
       template {
         data = <<-EOF
-          POSTGRES_DB = "vmck"
           {{- with secret "kv/postgres" }}
+            POSTGRES_DB = "vmck"
             POSTGRES_USER = {{ .Data.username }}
             POSTGRES_PASSWORD = {{ .Data.password }}
           {{- end }}
@@ -138,7 +138,7 @@ job "vmck" {
       }
       driver = "docker"
       config {
-        image = "vmck/vmck:postgres"
+        image = "vmck/vmck:0.5.1"
         hostname = "${attr.unique.hostname}"
         dns_servers = ["${attr.unique.network.ip-address}"]
         volumes = [
@@ -167,7 +167,7 @@ job "vmck" {
       template {
         data = <<-EOF
           {{- range service "vmck-imghost" -}}
-            QEMU_IMAGE_PATH_PREFIX = "http://{{.Address}}:{{.Port}}"
+            QEMU_IMAGE_PATH_PREFIX = "http://{{ .Address }}:{{ .Port }}"
           {{- end }}
           EOF
         destination = "local/vmck-imghost.env"
