@@ -118,7 +118,7 @@ job "acs-interface" {
       }
       driver = "docker"
       config {
-        image = "vmck/acs-interface:0.2.1"
+        image = "vmck/acs-interface:bf-release"
         dns_servers = ["${attr.unique.network.ip-address}"]
         volumes = [
           "${meta.volumes}/acs-interface:/opt/interface/data",
@@ -129,7 +129,6 @@ job "acs-interface" {
       }
       template {
         data = <<-EOF
-          SECRET_KEY = "TODO:ChangeME!!!"
           HOSTNAME = "*"
           ACS_INTERFACE_ADDRESS = "http://{{ env "NOMAD_ADDR_http" }}"
           ACS_USER_WHITELIST = '{{ key "acs_interface/whitelist" }}'
@@ -137,6 +136,15 @@ job "acs-interface" {
           EOF
           destination = "local/interface.env"
           env = true
+      }
+      template{
+        data = <<-EOF
+          {{- with secret "kv/acs-interface" -}}
+            SECRET_KEY = "{{ .Data.secret_key }}"
+          {{- end -}}
+          EOF
+        env = true
+        destination = "local/interface-key.env"
       }
       template {
         data = <<-EOF

@@ -151,7 +151,6 @@ job "vmck" {
       template {
         data = <<-EOF
           DEBUG = "true"
-          SECRET_KEY = "TODO:ChangeME!!!"
           HOSTNAME = "*"
           SSH_USERNAME = "vagrant"
           CONSUL_URL = "http://consul.service.consul:8500"
@@ -163,6 +162,15 @@ job "vmck" {
           EOF
         destination = "local/vmck.env"
         env = true
+      }
+      template{
+        data = <<-EOF
+          {{- with secret "kv/vmck" -}}
+            SECRET_KEY = "{{ .Data.secret_key }}"
+          {{- end -}}
+          EOF
+        env = true
+        destination = "local/vmck-key.env"
       }
       template {
         data = <<-EOF
