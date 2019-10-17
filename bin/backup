@@ -1,0 +1,51 @@
+#!/bin/bash -e
+
+export NOMAD_ADDR=http://10.42.2.1:4646
+borg_repo=/opt/volumes/borg
+time=$(date +%Y-%m-%dT%H:%M:%S)
+
+function nomad_alloc() {
+  curl -s $NOMAD_ADDR/v1/job/$1/allocations \
+    | jq '.[] | select(.TaskGroup == "'$2'") .ID' -r
+}
+
+function borg_create() {
+  #echo "saving to $borg_repo::$1" > /dev/null
+  #wc -c
+  borg create $borg_repo::$1 -
+}
+
+(
+  alloc=$(nomad_alloc acs-interface database)
+  backup_name=acs-interface-database-$time
+
+  set -x
+  nomad exec -t=false $alloc \
+    bash -c 'pg_dump -Ox -U $POSTGRES_USER interface' \
+    | borg_create $backup_name
+)
+
+(
+  alloc=$(nomad_alloc acs-interface storage)
+  backup_name=acs-interface-storage-$time
+
+  set -x
+  nomad exec -t=false $alloc \
+    tar c -C / data \
+    | borg_create $backup_name
+)
+
+(
+  alloc=$(nomad_alloc vmck database)
+  backup_name=acs-vmck-database-$time
+
+  set -x
+  nomad exec -t=false $alloc \
+    bash -c 'pg_dump -Ox -U $POSTGRES_USER vmck' \
+    | borg_create $backup_name
+)
+
+echo "✔ acs backup successful!"
+
+# to recover:
+#   borg extract --stdout $borg_repo::$backup_name
