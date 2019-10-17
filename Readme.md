@@ -23,10 +23,10 @@ Terraform has been successfully initialized!
 Terraform state is persisted in the cluster's consul so it's synchronized for
 all users of this repo.
 
-Make changes to the configuration files then run `terraform apply` to deploy.
+Make changes to the configuration files then run `./bin/deploy` to deploy.
 
 ```
-$ terraform apply
+$ ./bin/deploy
 nomad_job.vmck: Refreshing state... [id=vmck]
 nomad_job.acs-interface: Refreshing state... [id=acs-interface]
 
