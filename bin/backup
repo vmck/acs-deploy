@@ -1,6 +1,7 @@
 #!/bin/bash -e
 
 export NOMAD_ADDR=http://10.42.2.1:4646
+export CONSUL_ADDR=http://10.42.2.1:8500
 borg_repo=/opt/volumes/borg
 time=$(date +%Y-%m-%dT%H:%M:%S)
 
@@ -14,6 +15,11 @@ function borg_create() {
   pv | borg create $borg_repo::$archive_name -
   echo "💾 $1"
 }
+
+(
+  curl -s $CONSUL_ADDR/v1/snapshot?dc=dc1 \
+    | borg_create consul
+)
 
 (
   alloc=$(nomad_alloc acs-interface database)
