@@ -10,39 +10,30 @@ function nomad_alloc() {
 }
 
 function borg_create() {
-  #echo "saving to $borg_repo::$1" > /dev/null
-  #wc -c
-  borg create $borg_repo::$1 -
+  archive_name=acs-$1-$time
+  pv | borg create $borg_repo::$archive_name -
+  echo "💾 $1"
 }
 
 (
   alloc=$(nomad_alloc acs-interface database)
-  backup_name=acs-interface-database-$time
-
-  set -x
   nomad exec -t=false $alloc \
     bash -c 'pg_dump -Ox -U $POSTGRES_USER interface' \
-    | borg_create $backup_name
+    | borg_create interface-database
 )
 
 (
   alloc=$(nomad_alloc acs-interface storage)
-  backup_name=acs-interface-storage-$time
-
-  set -x
   nomad exec -t=false $alloc \
     tar c -C / data \
-    | borg_create $backup_name
+    | borg_create interface-storage
 )
 
 (
   alloc=$(nomad_alloc vmck database)
-  backup_name=acs-vmck-database-$time
-
-  set -x
   nomad exec -t=false $alloc \
     bash -c 'pg_dump -Ox -U $POSTGRES_USER vmck' \
-    | borg_create $backup_name
+    | borg_create vmck-database
 )
 
 echo "✔ acs backup successful!"
