@@ -1,0 +1,22 @@
+#!/bin/bash -e
+
+## usage
+# bin/nomad_exec vmck database postgres bash
+
+export NOMAD_ADDR=http://10.42.2.1:4646
+job=$1
+shift
+group=$1
+shift
+task=$1
+shift
+
+function nomad_alloc() {
+  curl -s $NOMAD_ADDR/v1/job/$1/allocations \
+    | jq '[ .[] | select(.TaskGroup == "'$2'") | select(.ClientStatus == "running") ][0] .ID' -r
+}
+
+alloc=$(nomad_alloc $job $group)
+
+set -x
+nomad exec -task $task $alloc "$@"
