@@ -131,6 +131,20 @@ job "vmck" {
   }
 
   group "vmck" {
+    restart {
+      interval = "1m"
+      attempts = 5
+      delay = "5s"
+      mode = "fail"
+    }
+
+    reschedule {
+      delay = "30s"
+      delay_function = "exponential"
+      max_delay = "5m"
+      unlimited = true
+    }
+
     task "vmck" {
       constraint {
         attribute = "${meta.volumes}"
