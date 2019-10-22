@@ -15,7 +15,7 @@ job "acs-interface" {
       }
       driver = "docker"
       config {
-        image = "minio/minio:RELEASE.2019-10-12T01-39-57Z"
+        image = "minio/minio:RELEASE.2019-09-26T19-42-35Z"
         dns_servers = ["${attr.unique.network.ip-address}"]
         command = "server"
         args = ["/data"]
