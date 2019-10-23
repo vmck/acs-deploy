@@ -1,4 +1,6 @@
-#!/bin/bash -e
+#!/bin/bash
+
+set -eo pipefail
 
 export NOMAD_ADDR=http://10.42.2.1:4646
 export CONSUL_ADDR=http://10.42.2.1:8500
