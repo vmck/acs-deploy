@@ -98,7 +98,7 @@ job "vmck" {
       }
       template {
         data = <<-EOF
-          {{- with secret "kv/postgres" }}
+          {{- with secret "kv/vmck/postgres" }}
             POSTGRES_DB = "vmck"
             POSTGRES_USER = {{ .Data.username }}
             POSTGRES_PASSWORD = {{ .Data.password }}
@@ -179,7 +179,7 @@ job "vmck" {
       }
       template{
         data = <<-EOF
-          {{- with secret "kv/vmck" -}}
+          {{- with secret "kv/vmck/django" -}}
             SECRET_KEY = "{{ .Data.secret_key }}"
           {{- end -}}
           EOF
@@ -197,7 +197,7 @@ job "vmck" {
       }
       template {
         data = <<-EOF
-          {{- with secret "kv/postgres" }}
+          {{- with secret "kv/vmck/postgres" }}
             POSTGRES_USER = {{ .Data.username }}
             POSTGRES_PASSWORD = {{ .Data.password }}
           {{- end }}

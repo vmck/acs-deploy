@@ -28,7 +28,7 @@ job "acs-interface" {
       }
       template {
         data = <<-EOF
-          {{- with secret "kv/minio" -}}
+          {{- with secret "kv/acs-interface/minio" -}}
             MINIO_ACCESS_KEY = "{{ .Data.access_key }}"
             MINIO_SECRET_KEY = "{{ .Data.secret_key }}"
             MINIO_BROWSER = "on"
@@ -81,7 +81,7 @@ job "acs-interface" {
       template {
         data = <<-EOF
           POSTGRES_DB = "interface"
-          {{- with secret "kv/postgres" }}
+          {{- with secret "kv/acs-interface/postgres" }}
             POSTGRES_USER = {{ .Data.username }}
             POSTGRES_PASSWORD = {{ .Data.password }}
           {{- end }}
@@ -138,7 +138,7 @@ job "acs-interface" {
       }
       template{
         data = <<-EOF
-          {{- with secret "kv/acs-interface" -}}
+          {{- with secret "kv/acs-interface/django" -}}
             SECRET_KEY = "{{ .Data.secret_key }}"
           {{- end -}}
           EOF
@@ -165,7 +165,7 @@ job "acs-interface" {
       }
       template {
         data = <<-EOF
-          {{- with secret "kv/minio" -}}
+          {{- with secret "kv/acs-interface/minio" -}}
             MINIO_ACCESS_KEY = "{{ .Data.access_key }}"
             MINIO_SECRET_KEY = "{{ .Data.secret_key }}"
             MINIO_BUCKET = "test"
@@ -176,7 +176,7 @@ job "acs-interface" {
       }
       template {
         data = <<-EOF
-          {{- with secret "kv/postgres" }}
+          {{- with secret "kv/acs-interface/postgres" }}
             POSTGRES_USER = {{ .Data.username }}
             POSTGRES_PASSWORD = {{ .Data.password }}
           {{- end }}
@@ -197,7 +197,7 @@ job "acs-interface" {
       }
       template {
         data = <<-EOF
-          {{- with secret "kv/ldap" -}}
+          {{- with secret "kv/acs-interface/ldap" -}}
             LDAP_SERVER_URL = "{{ .Data.server_address }}"
             LDAP_SERVER_URI = "ldaps://{{ .Data.server_address }}:{{ .Data.server_port }}"
             LDAP_BIND_DN = "{{ .Data.bind_dn }}"
