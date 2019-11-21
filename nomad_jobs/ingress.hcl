@@ -1,7 +1,7 @@
 job "ingress" {
 
   datacenters = ["dc1"]
-  type = "service"
+  type = "system"
 
   group "ingress" {
 
