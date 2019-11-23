@@ -1,0 +1,6 @@
+#!/bin/bash -e
+
+export NOMAD_ADDR=http://10.42.2.1:4646
+
+set -x
+nomad "$@"
