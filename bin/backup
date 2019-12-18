@@ -9,7 +9,7 @@ time=$(date +%Y-%m-%dT%H:%M:%S)
 
 function nomad_alloc() {
   curl -s $NOMAD_ADDR/v1/job/$1/allocations \
-    | jq '.[] | select(.TaskGroup == "'$2'") .ID' -r
+    | jq '.[] | select(.TaskGroup == "'$2'") | select(.ClientStatus == "running") .ID' -r
 }
 
 function borg_create() {
