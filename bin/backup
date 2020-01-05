@@ -4,7 +4,8 @@ set -eo pipefail
 
 export NOMAD_ADDR=http://10.42.2.1:4646
 export CONSUL_ADDR=http://10.42.2.1:8500
-borg_repo=/opt/volumes/borg
+export BORG_REPO=/opt/volumes/borg
+export BORG_PASSCOMMAND="pass show borg-acs"
 time=$(date +%Y-%m-%dT%H:%M:%S)
 
 function nomad_alloc() {
@@ -14,7 +15,7 @@ function nomad_alloc() {
 
 function borg_create() {
   archive_name=acs-$1-$time
-  pv | borg create $borg_repo::$archive_name -
+  pv | borg create ::$archive_name -
   echo "💾 $1"
 }
 
