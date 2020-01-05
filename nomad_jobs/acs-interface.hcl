@@ -93,7 +93,9 @@ job "acs-interface" {
         memory = 350
         network {
           mbits = 1
-          port "pg" {}
+          port "pg" {
+            static = 26669
+          }
         }
       }
       service {
@@ -147,18 +149,14 @@ job "acs-interface" {
       }
       template {
         data = <<-EOF
-          {{- range service "vmck" -}}
-            VMCK_API_URL = "http://{{.Address}}:{{.Port}}/v0/"
-          {{- end }}
+          VMCK_API_URL = "http://{{ env "attr.unique.network.ip-address" }}:10000/v0/"
           EOF
           env = true
           destination = "local/vmck-api.env"
       }
       template {
         data = <<-EOF
-          {{- range service "storage" -}}
-            MINIO_ADDRESS = "{{.Address}}:{{.Port}}"
-          {{- end }}
+          MINIO_ADDRESS = "{{ env "attr.unique.network.ip-address" }}:9000"
           EOF
           destination = "local/minio-api.env"
           env = true
@@ -186,11 +184,9 @@ job "acs-interface" {
       }
       template {
         data = <<-EOF
-          {{- range service "database-postgres-interface" -}}
-            POSTGRES_DB = "interface"
-            POSTGRES_ADDRESS = "{{ .Address }}"
-            POSTGRES_PORT = "{{ .Port }}"
-          {{- end }}
+          POSTGRES_DB = "interface"
+          POSTGRES_ADDRESS = "{{ env "attr.unique.network.ip-address" }}"
+          POSTGRES_PORT = "26669"
           EOF
           destination = "local/postgres-api.env"
           env = true

@@ -188,9 +188,7 @@ job "vmck" {
       }
       template {
         data = <<-EOF
-          {{- range service "vmck-imghost" -}}
-            QEMU_IMAGE_PATH_PREFIX = "http://{{ .Address }}:{{ .Port }}"
-          {{- end }}
+          QEMU_IMAGE_PATH_PREFIX = "http://{{ env "attr.unique.network.ip-address" }}:10001"
           EOF
         destination = "local/vmck-imghost.env"
         env = true
@@ -207,11 +205,9 @@ job "vmck" {
       }
       template {
         data = <<-EOF
-          {{- range service "database-postgres-vmck" -}}
-            POSTGRES_DB = "vmck"
-            POSTGRES_ADDRESS = "{{ .Address }}"
-            POSTGRES_PORT = "{{ .Port }}"
-          {{- end }}
+          POSTGRES_DB = "vmck"
+          POSTGRES_ADDRESS = "{{ env "attr.unique.network.ip-address" }}"
+          POSTGRES_PORT = "5431"
           EOF
         destination = "local/postgres-api.env"
         env = true
