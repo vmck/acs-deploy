@@ -1,7 +1,12 @@
 job "ingress" {
 
   datacenters = ["dc1"]
-  type = "system"
+  type = "service"
+
+  constraint {
+    attribute = "${meta.cluster_volumes}"
+    operator = "is_set"
+  }
 
   group "ingress" {
 
@@ -11,6 +16,7 @@ job "ingress" {
 
       config {
         image = "traefik:1.7"
+        dns_servers = ["8.8.8.8"]
         volumes = [
           "local/traefik.toml:/etc/traefik/traefik.toml:ro",
         ]
