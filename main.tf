@@ -22,3 +22,7 @@ resource "nomad_job" "acs-interface" {
 resource "nomad_job" "ingress" {
   jobspec = "${file("${path.module}/nomad_jobs/ingress.hcl")}"
 }
+
+resource "nomad_job" "drone" {
+  jobspec = "${file("${path.module}/nomad_jobs/drone.hcl")}"
+}
