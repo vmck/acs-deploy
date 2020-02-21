@@ -19,12 +19,13 @@ job "drone" {
         port_map {
           http = 80
         }
+        privileged = "true"
       }
       env {
         DRONE_LOGS_DEBUG = "true"
         # https://discourse.drone.io/t/1-5-0-release-notes/5797
         DRONE_AGENTS_DISABLED = "true"
-        DRONE_USER_AGENT = "username:gmuraru,admin:true"
+        DRONE_USER_CREATE = "username:gmuraru,admin:true"
 
         DRONE_GITHUB_SERVER = "https://github.com"
         DRONE_SERVER_HOST = "frisbee.vmchecker.cs.pub.ro"
