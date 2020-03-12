@@ -30,7 +30,7 @@ job "drone" {
         DRONE_GITHUB_SERVER = "https://github.com"
         DRONE_SERVER_HOST = "frisbee.vmchecker.cs.pub.ro"
         DRONE_SERVER_PROTO = "https"
-        DRONE_RUNNER_ENVIRON = "VMCK_IP:10.42.2.2,VMCK_PORT:10000"
+        DRONE_RUNNER_ENVIRON = "VMCK_IP:10.42.2.3,VMCK_PORT:10000"
       }
       template {
         data = <<-EOF
