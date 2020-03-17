@@ -130,7 +130,7 @@ through https. If that is not the case then:
 
 * Go into Nomad UI and stop the job ingress
 * Go to Consul UI, in the KV tab delete the ingress folder
-* Restart traefik
+* Restart traefik by going into the ingress job from the Nomad UI and click on start
 * In 15 minutes you should have new certificates
 
 [liquidinvestigations/cluster]: https://github.com/liquidinvestigations/cluster
