@@ -120,7 +120,7 @@ job "acs-interface" {
       }
       driver = "docker"
       config {
-        image = "vmck/acs-interface:0.4.4"
+        image = "vmck/acs-interface:0.5.0"
         dns_servers = ["${attr.unique.network.ip-address}"]
         volumes = [
           "${meta.volumes}/acs-interface:/opt/interface/data",
@@ -229,6 +229,62 @@ job "acs-interface" {
           "ingress.enable=true",
           "ingress.frontend.rule=Host:v2.vmchecker.cs.pub.ro",
         ]
+      }
+    },
+
+    task "acs-sync-subs" {
+      constraint {
+        attribute = "${meta.volumes}"
+        operator  = "is_set"
+      }
+      driver = "docker"
+
+      config {
+        image = "vmck/acs-interface:0.5.0"
+        command = "/opt/interface/manage.py"
+        args = ["sync_vmck"]
+        dns_servers = ["${attr.unique.network.ip-address}"]
+        volumes = [
+          "${meta.volumes}/acs-interface:/opt/interface/data",
+        ]
+        port_map {
+          http = 8100
+        }
+      }
+      template {
+        data = <<-EOF
+          {{- with secret "kv/acs-interface/postgres" }}
+            POSTGRES_USER = {{ .Data.username }}
+            POSTGRES_PASSWORD = {{ .Data.password }}
+          {{- end }}
+          EOF
+          destination = "local/postgres.env"
+          env = true
+      }
+      template {
+        data = <<-EOF
+          POSTGRES_DB = "interface"
+          POSTGRES_ADDRESS = "{{ env "attr.unique.network.ip-address" }}"
+          POSTGRES_PORT = "26669"
+          EOF
+          destination = "local/postgres-api.env"
+          env = true
+      }
+      template {
+        data = <<-EOF
+          VMCK_API_URL = "http://{{ env "attr.unique.network.ip-address" }}:10000/v0/"
+          EOF
+          env = true
+          destination = "local/vmck-api.env"
+      }
+      resources {
+        memory = 100
+        cpu = 200
+        network {
+          port "http" {
+            static = 10003
+          }
+        }
       }
     }
   }
