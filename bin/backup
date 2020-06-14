@@ -2,9 +2,15 @@
 
 set -eo pipefail
 
+if [ $# != 2 ]; then
+    echo "How to use: "
+    echo -e "\t./bin/backup <borg backup location>"
+    exit 1
+fi
+
 export NOMAD_ADDR=http://10.42.2.1:4646
 export CONSUL_ADDR=http://10.42.2.1:8500
-export BORG_REPO=/opt/volumes/borg
+export BORG_REPO="$2"
 export BORG_PASSCOMMAND="pass show borg-acs"
 time=$(date +%Y-%m-%dT%H:%M:%S)
 
@@ -14,7 +20,7 @@ function nomad_alloc() {
 }
 
 function borg_create() {
-  archive_name=acs-$1-$time
+  archive_name="acs-$1-$time"
   pv | borg create ::$archive_name -
   echo "💾 $1"
 }

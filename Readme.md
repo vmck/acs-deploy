@@ -59,11 +59,53 @@ A script that does a backup on:
 * Acs-interface's Minio archives storage
 * Vmck's Postgres database
 
-It uses [borg] as the backup manager. It is recommended to set this script as
-a cron job. Make sure you also have `pv` installed.
+It uses `borg` as the backup manager. It is recommended to set this script as
+a cron job.
 
-[borg]: https://borgbackup.readthedocs.io/en/stable/
+#### Setup
 
+##### Requirements
+
+* [borg](https://borgbackup.readthedocs.io/en/stable/)
+* [jp](https://github.com/jmespath/jp)
+* [pv](https://linux.die.net/man/1/pv)
+* [nomad](https://www.nomadproject.io/docs/install/)
+* [pass](https://www.passwordstore.org/)
+
+##### Steps
+1. Make sure you have the `requirements` installed
+
+2. Create a new `gpg` key using:
+```
+gpg --full-generate-key
+```
+
+3. Initialize the borg location where the backup will be stored (you need to
+enter a passphrase):
+```
+mkdir -p <directory>
+borg init <directory>
+```
+
+4. Initialize a new `pass` repo using the previously generated `gpg ` key
+```
+pass init <gpg-id>
+```
+
+5. Generate a password for the `borg-acs` using the next command.
+You will also need to add a passphrase (needs to be the same passphrase
+used at step 3):
+```
+pass insert borg-acs
+```
+
+5. In the `bin/backup` change `BORG_REPO` variable with the directory used
+with the `borg init` command.
+
+6. Run the backup script :)
+```
+./bin/backup
+```
 
 ### Consul state snapshot - bin/consul-snapshot
 
