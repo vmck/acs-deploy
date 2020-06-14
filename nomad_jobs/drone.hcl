@@ -15,6 +15,7 @@ job "drone" {
         image = "drone/drone:1.6.5"
         volumes = [
           "/var/run/docker.sock:/var/run/docker.sock",
+          "/opt/volumes/drone:/data ",
         ]
         port_map {
           http = 80
@@ -25,7 +26,7 @@ job "drone" {
         DRONE_LOGS_DEBUG = "true"
         # https://discourse.drone.io/t/1-5-0-release-notes/5797
         DRONE_AGENTS_DISABLED = "true"
-        DRONE_USER_CREATE = "username:gmuraru,admin:true"
+        DRONE_USER_CREATE = "username:jokeswar,admin:true"
 
         DRONE_GITHUB_SERVER = "https://github.com"
         DRONE_SERVER_HOST = "frisbee.vmchecker.cs.pub.ro"
