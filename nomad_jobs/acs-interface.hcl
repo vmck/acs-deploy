@@ -147,6 +147,15 @@ job "acs-interface" {
         env = true
         destination = "local/interface-key.env"
       }
+      template{
+        data = <<-EOF
+          {{- with secret "kv/acs-interface/django" -}}
+            SENTRY_DSN = "{{ .Data.sentry_sdk_dsn }}"
+          {{- end -}}
+          EOF
+        env = true
+        destination = "local/sentry_sdk_dsn.env"
+      }
       template {
         data = <<-EOF
           VMCK_API_URL = "http://{{ env "attr.unique.network.ip-address" }}:10000/v0/"
