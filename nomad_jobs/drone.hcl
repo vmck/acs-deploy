@@ -15,7 +15,7 @@ job "drone" {
         image = "drone/drone:1.6.5"
         volumes = [
           "/var/run/docker.sock:/var/run/docker.sock",
-          "/opt/volumes/drone:/data ",
+          "/opt/volumes/drone:/data",
         ]
         port_map {
           http = 80
