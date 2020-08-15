@@ -1,0 +1,33 @@
+#!/bin/bash -e
+
+export DRONE_SERVER=https://frisbee.vmchecker.cs.pub.ro
+
+if [[ -z "${DRONE_TOKEN}" ]]; then
+  echo "Drone token not present"
+  exit 1
+fi
+
+drone info > /dev/null 2>&1
+
+drone user add --admin gmuraru
+
+function config_repo {
+    drone repo enable vmck/$1
+    drone repo update vmck/$1 --trusted --timeout=30m \
+        --visibility=public --ignore-forks --ignore-pull-requests
+}
+
+config_repo acs-interface
+config_repo vmck
+config_repo vagrant-vmck
+config_repo image-builder
+
+drone orgsecret add vmck docker_username "$DOCKER_USERNAME"
+drone orgsecret add vmck docker_password "$DOCKER_PASSWORD"
+
+drone secret add  --name codecov_token --data "$ACS_INTERFACE_CODECOV" \
+    vmck/acs-interface
+
+drone cron add vmck/acs-interface build_master "0 0 6 * * ?"
+drone cron add vmck/vmck build_master "0 0 6 * * ?"
+drone cron add vmck/vagrant-vmck build_master "0 0 6 * * ?"
