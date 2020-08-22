@@ -186,6 +186,15 @@ job "vmck" {
         env = true
         destination = "local/vmck-key.env"
       }
+      template{
+        data = <<-EOF
+          {{- with secret "kv/vmck/django" -}}
+            SENTRY_DSN = "{{ .Data.sentry_sdk_dsn }}"
+          {{- end -}}
+          EOF
+        env = true
+        destination = "local/sentry_sdk_dsn.env"
+      }
       template {
         data = <<-EOF
           QEMU_IMAGE_PATH_PREFIX = "http://{{ env "attr.unique.network.ip-address" }}:10001"
