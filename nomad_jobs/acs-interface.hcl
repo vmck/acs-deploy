@@ -91,6 +91,7 @@ job "acs-interface" {
       }
       resources {
         memory = 350
+        cpu = 500
         network {
           mbits = 1
           port "pg" {
@@ -113,6 +114,7 @@ job "acs-interface" {
   }
 
   group "acs-interface" {
+    count = 1
     task "acs-interface" {
       constraint {
         attribute = "${meta.volumes}"
@@ -120,7 +122,7 @@ job "acs-interface" {
       }
       driver = "docker"
       config {
-        image = "vmck/acs-interface:0.5.0"
+        image = "vmck/acs-interface:0.6.0"
         dns_servers = ["${attr.unique.network.ip-address}"]
         volumes = [
           "${meta.volumes}/acs-interface:/opt/interface/data",
@@ -205,6 +207,15 @@ job "acs-interface" {
           destination = "local/ldap.env"
           env = true
       }
+      template{
+        data = <<-EOF
+          {{- with secret "kv/acs-interface/django" -}}
+            SENTRY_DSN = "{{ .Data.sentry_sdk_dsn }}"
+          {{- end -}}
+          EOF
+        env = true
+        destination = "local/sentry_sdk_dsn.env"
+      }
       resources {
         memory = 300
         cpu = 500
@@ -228,63 +239,8 @@ job "acs-interface" {
         tags = [
           "ingress.enable=true",
           "ingress.frontend.rule=Host:v2.vmchecker.cs.pub.ro",
+          "fabio-/acs-interface",
         ]
-      }
-    },
-
-    task "acs-sync-subs" {
-      constraint {
-        attribute = "${meta.volumes}"
-        operator  = "is_set"
-      }
-      driver = "docker"
-
-      config {
-        image = "vmck/acs-interface:0.5.0"
-        command = "/opt/interface/manage.py"
-        args = ["sync_vmck"]
-        dns_servers = ["${attr.unique.network.ip-address}"]
-        volumes = [
-          "${meta.volumes}/acs-interface:/opt/interface/data",
-        ]
-        port_map {
-          http = 8100
-        }
-      }
-      template {
-        data = <<-EOF
-          {{- with secret "kv/acs-interface/postgres" }}
-            POSTGRES_USER = {{ .Data.username }}
-            POSTGRES_PASSWORD = {{ .Data.password }}
-          {{- end }}
-          EOF
-          destination = "local/postgres.env"
-          env = true
-      }
-      template {
-        data = <<-EOF
-          POSTGRES_DB = "interface"
-          POSTGRES_ADDRESS = "{{ env "attr.unique.network.ip-address" }}"
-          POSTGRES_PORT = "26669"
-          EOF
-          destination = "local/postgres-api.env"
-          env = true
-      }
-      template {
-        data = <<-EOF
-          VMCK_API_URL = "http://{{ env "attr.unique.network.ip-address" }}:10000/v0/"
-          EOF
-          env = true
-          destination = "local/vmck-api.env"
-      }
-      resources {
-        memory = 100
-        cpu = 200
-        network {
-          port "http" {
-            static = 10003
-          }
-        }
       }
     }
   }
