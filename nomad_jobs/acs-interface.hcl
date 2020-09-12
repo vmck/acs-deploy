@@ -135,7 +135,7 @@ job "acs-interface" {
         data = <<-EOF
           HOSTNAME = "*"
           ACS_INTERFACE_ADDRESS = "http://{{ env "NOMAD_ADDR_http" }}"
-          MANAGER_TAG = "0.4.0"
+          MANAGER_TAG = "0.4.2"
           EOF
           destination = "local/interface.env"
           env = true
