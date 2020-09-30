@@ -7,12 +7,18 @@ job "acs-interface" {
     operator = "is_set"
   }
 
+  constraint {
+    attribute = "${meta.acs_job}"
+    operator = "is_not_set"
+  }
+
   group "storage" {
     task "minio" {
       constraint {
         attribute = "${meta.volumes}"
         operator  = "is_set"
       }
+
       driver = "docker"
       config {
         image = "minio/minio:RELEASE.2019-09-26T19-42-35Z"
@@ -66,7 +72,6 @@ job "acs-interface" {
         attribute = "${meta.volumes}"
         operator  = "is_set"
       }
-
       driver = "docker"
       config {
         image = "postgres:12.0-alpine"
@@ -114,11 +119,11 @@ job "acs-interface" {
   }
 
   group "acs-interface" {
-    count = 1
+    count = 4
     task "acs-interface" {
       constraint {
         attribute = "${meta.volumes}"
-        operator  = "is_set"
+        operator = "is_set"
       }
       driver = "docker"
       config {
@@ -136,6 +141,8 @@ job "acs-interface" {
           HOSTNAME = "*"
           ACS_INTERFACE_ADDRESS = "http://{{ env "NOMAD_ADDR_http" }}"
           MANAGER_TAG = "0.4.2"
+          TOTAL_MACHINES = 20
+          APP_THREAD_COUNT = 16
           EOF
           destination = "local/interface.env"
           env = true
@@ -218,11 +225,9 @@ job "acs-interface" {
       }
       resources {
         memory = 300
-        cpu = 500
+        cpu = 1000
         network {
-          port "http" {
-            static = 10002
-          }
+          port "http" {}
         }
       }
       service {

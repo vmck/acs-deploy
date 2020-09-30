@@ -3,6 +3,11 @@ job "drone" {
   type = "service"
   priority = 90
 
+  constraint {
+    attribute = "${meta.acs_job}"
+    operator = "is_not_set"
+  }
+
   group "drone" {
     task "drone" {
       constraint {

@@ -6,6 +6,10 @@ job "vmck" {
     attribute = "${meta.vmck_worker}"
     operator = "is_set"
   }
+  constraint {
+    attribute = "${meta.acs_job}"
+    operator = "is_not_set"
+  }
 
   group "imghost" {
     task "nginx" {
@@ -152,7 +156,7 @@ job "vmck" {
       }
       driver = "docker"
       config {
-        image = "vmck/vmck:0.6.0"
+        image = "vmck/vmck:jw-raw_exec-qemu"
         hostname = "${attr.unique.hostname}"
         dns_servers = ["${attr.unique.network.ip-address}"]
         volumes = [
@@ -171,7 +175,7 @@ job "vmck" {
           NOMAD_URL = "http://nomad.service.consul:4646"
           VMCK_URL = 'http://{{ env "NOMAD_ADDR_http" }}'
           BACKEND = "qemu"
-          QEMU_CPU_MHZ = 3000
+          QEMU_CPU_MHZ = 2500
           CHECK_SSH_SIGNATURE_TIMEOUT = "1"
           EOF
         destination = "local/vmck.env"
