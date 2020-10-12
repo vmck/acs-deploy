@@ -4,23 +4,22 @@ job "drone" {
   priority = 90
 
   constraint {
-    attribute = "${meta.acs_job}"
-    operator = "is_not_set"
+    attribute = "${meta.vmck_ci}"
+    operator = "is_set"
   }
 
   group "drone" {
     task "drone" {
       constraint {
-        attribute = "${meta.vmck_worker}"
+        attribute = "${meta.volumes}"
         operator = "is_set"
       }
-
       driver = "docker"
       config {
         image = "drone/drone:1.6.5"
         volumes = [
           "/var/run/docker.sock:/var/run/docker.sock",
-          "/opt/volumes/drone:/data",
+          "${meta.volumes}/drone:/data",
         ]
         port_map {
           http = 80
@@ -34,9 +33,9 @@ job "drone" {
         DRONE_USER_CREATE = "username:jokeswar,admin:true"
 
         DRONE_GITHUB_SERVER = "https://github.com"
-        DRONE_SERVER_HOST = "frisbee.vmchecker.cs.pub.ro"
+        DRONE_SERVER_HOST = "frisbee.grid.pub.ro"
         DRONE_SERVER_PROTO = "https"
-        DRONE_RUNNER_ENVIRON = "VMCK_IP:10.42.2.3,VMCK_PORT:10000"
+        DRONE_RUNNER_ENVIRON = "VMCK_IP:10.42.1.1,VMCK_PORT:10000"
       }
       template {
         data = <<-EOF
@@ -50,8 +49,8 @@ job "drone" {
         env = true
       }
       resources {
-        memory = 250
-        cpu = 150
+        memory = 200
+        cpu = 200
         network {
           mbits = 1
           port "http" {
@@ -64,7 +63,7 @@ job "drone" {
         port = "http"
         tags = [
           "ingress.enable=true",
-          "ingress.frontend.rule=Host:frisbee.vmchecker.cs.pub.ro",
+          "ingress.frontend.rule=Host:frisbee.grid.pub.ro",
         ]
         check {
           name = "http"

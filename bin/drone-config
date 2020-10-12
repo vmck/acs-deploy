@@ -1,7 +1,5 @@
 #!/bin/bash -e
 
-export DRONE_SERVER=https://frisbee.vmchecker.cs.pub.ro
-
 if [[ -z "${DRONE_TOKEN}" ]]; then
   echo "Drone token not present"
   exit 1

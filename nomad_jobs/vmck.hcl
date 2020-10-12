@@ -3,12 +3,8 @@ job "vmck" {
   type = "service"
 
   constraint {
-    attribute = "${meta.vmck_worker}"
+    attribute = "${meta.vmck_ui}"
     operator = "is_set"
-  }
-  constraint {
-    attribute = "${meta.acs_job}"
-    operator = "is_not_set"
   }
 
   group "imghost" {
@@ -159,6 +155,7 @@ job "vmck" {
         image = "vmck/vmck:jw-raw_exec-qemu"
         hostname = "${attr.unique.hostname}"
         dns_servers = ["${attr.unique.network.ip-address}"]
+        force_pull = true
         volumes = [
           "${meta.volumes}/vmck:/opt/vmck/data",
         ]

@@ -1,13 +1,13 @@
 terraform {
   backend "consul" {
-    address = "10.42.2.1:8500"
+    address = "10.42.1.1:8500"
     scheme = "http"
     path = "terraform_state"
   }
 }
 
 provider "nomad" {
-  address = "http://10.42.2.1:4646"
+  address = "http://10.42.1.1:4646"
   version = "~> 1.4"
 }
 

@@ -3,13 +3,8 @@ job "acs-interface" {
   type = "service"
 
   constraint {
-    attribute = "${meta.vmck_worker}"
+    attribute = "${meta.vmck_ui}"
     operator = "is_set"
-  }
-
-  constraint {
-    attribute = "${meta.acs_job}"
-    operator = "is_not_set"
   }
 
   group "storage" {
@@ -127,7 +122,7 @@ job "acs-interface" {
       }
       driver = "docker"
       config {
-        image = "vmck/acs-interface:0.6.0"
+        image = "vmck/acs-interface:jw-select-backend"
         dns_servers = ["${attr.unique.network.ip-address}"]
         volumes = [
           "${meta.volumes}/acs-interface:/opt/interface/data",
@@ -140,6 +135,7 @@ job "acs-interface" {
         data = <<-EOF
           HOSTNAME = "*"
           ACS_INTERFACE_ADDRESS = "http://{{ env "NOMAD_ADDR_http" }}"
+          EVALUATOR_BACKEND = "raw_qemu"
           MANAGER_TAG = "0.4.2"
           TOTAL_MACHINES = 20
           APP_THREAD_COUNT = 16
@@ -243,7 +239,7 @@ job "acs-interface" {
         }
         tags = [
           "ingress.enable=true",
-          "ingress.frontend.rule=Host:v2.vmchecker.cs.pub.ro",
+          "ingress.frontend.rule=Host:v2.vmchecker.grid.pub.ro",
           "fabio-/acs-interface",
         ]
       }
