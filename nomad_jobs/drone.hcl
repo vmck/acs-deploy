@@ -10,7 +10,7 @@ job "drone" {
 
   group "drone" {
     task "drone-vault" {
-	
+        
       constraint {
         attribute = "${meta.vmck_worker}"
         operator = "is_set"
@@ -18,30 +18,30 @@ job "drone" {
 
       driver = "docker"
       config {
-	network_mode = "host"
+        network_mode = "host"
         image = "drone/vault"
-	args = [
-	    "--publish", "3000:3000",
-	    "--restart", "always",
-	    "--name", "secrets",
-	]
+        args = [
+            "--publish", "3000:3000",
+            "--restart", "always",
+            "--name", "secrets",
+        ]
         privileged = "true"
       }
       env {
-	# Docker machine information
+        # Docker machine information
         DRONE_LOGS_TRACE = "true"
-	DRONE_TRACE = "true"
+        DRONE_TRACE = "true"
         DRONE_AGENTS_DISABLED = "true"
-	DRONE_SERVER_HOST = "frisbee.grid.pub.ro"
-	VAULT_ADDR = "http://10.42.1.1:8200"
-	DRONE_SERVER_HOST = "frisbee.grid.pub.ro"
-	VAULT_TOKEN = ""
+        DRONE_SERVER_HOST = "frisbee.grid.pub.ro"
+        VAULT_ADDR = "http://10.42.1.1:8200"
+        DRONE_SERVER_HOST = "frisbee.grid.pub.ro"
+        VAULT_TOKEN = ""
       }
       template {
         data = <<-EOF
-	  {{- with secret "kv/drone/vault" }}
+          {{- with secret "kv/drone/vault" }}
            DRONE_SECRET = {{.Data.secret_plugin | toJSON }}
-	  {{- end }}
+          {{- end }}
         EOF
         destination = "local/drone-vault.env"
         env = true
@@ -107,9 +107,9 @@ job "drone" {
             DRONE_GITHUB_CLIENT_SECRET = {{.Data.client_secret | toJSON }}
             DRONE_USER_FILTER = {{.Data.user_filter | toJSON }}
           {{- end }}
-	  {{- with secret "kv/drone/vault" }}
-	    DRONE_SECRET_PLUGIN_TOKEN = {{.Data.secret_plugin | toJSON }}
-	  {{- end }}
+          {{- with secret "kv/drone/vault" }}
+            DRONE_SECRET_PLUGIN_TOKEN = {{.Data.secret_plugin | toJSON }}
+          {{- end }}
         EOF
         destination = "local/drone.env"
         env = true
