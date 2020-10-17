@@ -3,14 +3,18 @@ job "vmck" {
   type = "service"
 
   constraint {
-    attribute = "${meta.vmck_ui}"
+    attribute = "${meta.vmck_worker}"
     operator = "is_set"
   }
 
   group "imghost" {
     task "nginx" {
       constraint {
-        attribute = "${meta.volumes}"
+        attribute = "${meta.vmck_ci}"
+        operator  = "is_set"
+      }
+      constrain {
+	attribute = "${meta.volumes}"
         operator  = "is_set"
       }
       driver = "docker"
