@@ -76,7 +76,7 @@ job "drone" {
 
         DRONE_SERVER_HOST = "frisbee.grid.pub.ro"
         DRONE_SERVER_PROTO = "https"
-        DRONE_RUNNER_ENVIRON = "VMCK_IP:10.42.1.1,VMCK_PORT:10001"
+        DRONE_RUNNER_ENVIRON = "VMCK_IP:10.42.1.1,VMCK_PORT:10000"
       }
       template {
         data = <<-EOF
@@ -84,10 +84,6 @@ job "drone" {
             DRONE_GITHUB_CLIENT_ID = {{.Data.client_id | toJSON }}
             DRONE_GITHUB_CLIENT_SECRET = {{.Data.client_secret | toJSON }}
             DRONE_USER_FILTER = {{.Data.user_filter | toJSON }}
-          {{- end }}
-	    DRONE_SECRET_PLUGIN_ENDPOINT = "http://{{ env "NOMAD_ADDR_drone_vault_port" }}"
-          {{- with secret "kv/drone/vault" }}
-            DRONE_SECRET_PLUGIN_TOKEN = {{.Data.secret_plugin | toJSON }}
           {{- end }}
         EOF
         destination = "local/drone.env"
