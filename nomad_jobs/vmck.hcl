@@ -3,14 +3,15 @@ job "vmck" {
   type = "service"
 
   constraint {
-    attribute = "${meta.vmck_worker}"
-    operator = "is_set"
+    attribute = "${meta.volumes}"
+    operator  = "is_set"
   }
+
 
   group "imghost" {
     task "nginx" {
       constraint {
-        attribute = "${meta.volumes}"
+        attribute = "${meta.vmck_ui}"
         operator  = "is_set"
       }
       driver = "docker"
@@ -81,7 +82,7 @@ job "vmck" {
   group "database" {
     task "postgres" {
       constraint {
-        attribute = "${meta.volumes}"
+        attribute = "${meta.vmck_ui}"
         operator  = "is_set"
       }
 
@@ -147,14 +148,15 @@ job "vmck" {
 
     task "vmck" {
       constraint {
-        attribute = "${meta.volumes}"
+        attribute = "${meta.vmck_ui}"
         operator  = "is_set"
       }
       driver = "docker"
       config {
-        image = "vmck/vmck:0.6.0"
+        image = "vmck/vmck:jw-raw_exec-qemu"
         hostname = "${attr.unique.hostname}"
         dns_servers = ["${attr.unique.network.ip-address}"]
+        force_pull = true
         volumes = [
           "${meta.volumes}/vmck:/opt/vmck/data",
         ]
@@ -171,7 +173,7 @@ job "vmck" {
           NOMAD_URL = "http://nomad.service.consul:4646"
           VMCK_URL = 'http://{{ env "NOMAD_ADDR_http" }}'
           BACKEND = "qemu"
-          QEMU_CPU_MHZ = 3000
+          QEMU_CPU_MHZ = 2500
           CHECK_SSH_SIGNATURE_TIMEOUT = "1"
           EOF
         destination = "local/vmck.env"

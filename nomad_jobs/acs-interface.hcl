@@ -3,7 +3,7 @@ job "acs-interface" {
   type = "service"
 
   constraint {
-    attribute = "${meta.vmck_worker}"
+    attribute = "${meta.vmck_ui}"
     operator = "is_set"
   }
 
@@ -13,6 +13,7 @@ job "acs-interface" {
         attribute = "${meta.volumes}"
         operator  = "is_set"
       }
+
       driver = "docker"
       config {
         image = "minio/minio:RELEASE.2019-09-26T19-42-35Z"
@@ -66,7 +67,6 @@ job "acs-interface" {
         attribute = "${meta.volumes}"
         operator  = "is_set"
       }
-
       driver = "docker"
       config {
         image = "postgres:12.0-alpine"
@@ -90,10 +90,9 @@ job "acs-interface" {
         env = true
       }
       resources {
-        memory = 350
-        cpu = 500
+        memory = 500
+        cpu = 1000
         network {
-          mbits = 1
           port "pg" {
             static = 26669
           }
@@ -114,16 +113,17 @@ job "acs-interface" {
   }
 
   group "acs-interface" {
-    count = 1
+    count = 2
     task "acs-interface" {
       constraint {
         attribute = "${meta.volumes}"
-        operator  = "is_set"
+        operator = "is_set"
       }
       driver = "docker"
       config {
-        image = "vmck/acs-interface:0.6.0"
+        image = "vmck/acs-interface:dev"
         dns_servers = ["${attr.unique.network.ip-address}"]
+        force_pull = true
         volumes = [
           "${meta.volumes}/acs-interface:/opt/interface/data",
         ]
@@ -135,7 +135,12 @@ job "acs-interface" {
         data = <<-EOF
           HOSTNAME = "*"
           ACS_INTERFACE_ADDRESS = "http://{{ env "NOMAD_ADDR_http" }}"
+          EVALUATOR_BACKEND = "raw_qemu"
           MANAGER_TAG = "0.4.2"
+          MANAGER_MHZ = "50"
+          MANAGER_MEMORY = "200"
+          TOTAL_MACHINES = 20
+          APP_THREAD_COUNT = 16
           EOF
           destination = "local/interface.env"
           env = true
@@ -218,11 +223,9 @@ job "acs-interface" {
       }
       resources {
         memory = 300
-        cpu = 500
+        cpu = 2000
         network {
-          port "http" {
-            static = 10002
-          }
+          port "http" {}
         }
       }
       service {
@@ -238,7 +241,7 @@ job "acs-interface" {
         }
         tags = [
           "ingress.enable=true",
-          "ingress.frontend.rule=Host:v2.vmchecker.cs.pub.ro",
+          "ingress.frontend.rule=Host:v2.vmchecker.grid.pub.ro",
           "fabio-/acs-interface",
         ]
       }

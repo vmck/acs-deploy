@@ -20,6 +20,95 @@
   "panels": [
     {
       "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 0
+      },
+      "id": 14,
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": false,
+        "hideZero": false,
+        "max": false,
+        "min": false,
+        "rightSide": false,
+        "show": false,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null as zero",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "nomad_nomad_job_summary_running{exported_job=~\"vmck-.*\",task_group=\"test\"} > 0",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Individual Running Submissions",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "transparent": true,
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
       "bars": true,
       "dashLength": 10,
       "dashes": false,
@@ -28,8 +117,8 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 8,
-        "w": 10,
-        "x": 0,
+        "w": 8,
+        "x": 8,
         "y": 0
       },
       "id": 2,
@@ -58,7 +147,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "nomad_nomad_job_summary_running{task_group=\"test\"}",
+          "expr": "sum(nomad_nomad_job_summary_running{exported_job=~\"vmck-.*\",task_group=\"test\"} > 0)",
           "refId": "A"
         }
       ],
@@ -114,8 +203,8 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 8,
-        "w": 10,
-        "x": 10,
+        "w": 8,
+        "x": 16,
         "y": 0
       },
       "id": 4,
@@ -144,7 +233,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "nomad_nomad_job_summary_queued{task_group=\"test\"}",
+          "expr": "count(nomad_nomad_job_summary_queued{exported_job=~\"vmck-.*\",task_group=\"test\"} > 0)",
           "refId": "A"
         }
       ],
@@ -191,59 +280,6 @@
       }
     },
     {
-      "cacheTimeout": null,
-      "datasource": "Prometheus",
-      "gridPos": {
-        "h": 8,
-        "w": 4,
-        "x": 20,
-        "y": 0
-      },
-      "id": 10,
-      "links": [],
-      "options": {
-        "fieldOptions": {
-          "calcs": [
-            "mean"
-          ],
-          "defaults": {
-            "decimals": 2,
-            "mappings": [],
-            "max": 1,
-            "min": 0,
-            "thresholds": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 0.8
-              }
-            ],
-            "unit": "percentunit"
-          },
-          "override": {},
-          "values": false
-        },
-        "orientation": "auto",
-        "showThresholdLabels": true,
-        "showThresholdMarkers": true
-      },
-      "pluginVersion": "6.3.5",
-      "targets": [
-        {
-          "expr": "avg(nomad_client_host_cpu_total{host=\"the-eden\"})/100",
-          "refId": "A"
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "CPU",
-      "transparent": true,
-      "type": "gauge"
-    },
-    {
       "aliasColors": {},
       "bars": true,
       "dashLength": 10,
@@ -252,8 +288,8 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 8,
-        "w": 10,
+        "h": 6,
+        "w": 12,
         "x": 0,
         "y": 8
       },
@@ -338,9 +374,9 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 8,
-        "w": 10,
-        "x": 10,
+        "h": 6,
+        "w": 12,
+        "x": 12,
         "y": 8
       },
       "id": 8,
@@ -416,12 +452,65 @@
       }
     },
     {
+      "cacheTimeout": null,
       "datasource": "Prometheus",
       "gridPos": {
         "h": 8,
         "w": 4,
-        "x": 20,
-        "y": 8
+        "x": 0,
+        "y": 14
+      },
+      "id": 10,
+      "links": [],
+      "options": {
+        "fieldOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "defaults": {
+            "decimals": 2,
+            "mappings": [],
+            "max": 1,
+            "min": 0,
+            "thresholds": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 0.8
+              }
+            ],
+            "unit": "percentunit"
+          },
+          "override": {},
+          "values": false
+        },
+        "orientation": "auto",
+        "showThresholdLabels": true,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "6.3.5",
+      "targets": [
+        {
+          "expr": "avg(nomad_client_host_cpu_total{host=\"vmchecker-compute.cs.pub.ro\"})/100",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "CPU",
+      "transparent": true,
+      "type": "gauge"
+    },
+    {
+      "datasource": "Prometheus",
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 4,
+        "y": 14
       },
       "id": 12,
       "options": {
@@ -456,7 +545,7 @@
       "pluginVersion": "6.3.5",
       "targets": [
         {
-          "expr": "nomad_client_host_memory_used{host=\"the-eden\"}/nomad_client_host_memory_total{host=\"the-eden\"}",
+          "expr": "nomad_client_host_memory_used{host=\"vmchecker-compute.cs.pub.ro\"}/nomad_client_host_memory_total{host=\"vmchecker-compute.cs.pub.ro\"}",
           "refId": "A"
         }
       ],
@@ -465,9 +554,96 @@
       "title": "Memory",
       "transparent": true,
       "type": "gauge"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorPostfix": false,
+      "colorPrefix": false,
+      "colorValue": false,
+      "colors": [
+        "#299c46",
+        "rgba(237, 129, 40, 0.89)",
+        "#d44a3a"
+      ],
+      "datasource": "Prometheus",
+      "format": "bytes",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 2,
+        "x": 8,
+        "y": 14
+      },
+      "id": 16,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "options": {},
+      "pluginVersion": "6.3.5",
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false,
+        "ymax": null,
+        "ymin": null
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "nomad_client_host_memory_total{host=\"vmchecker-compute.cs.pub.ro\"}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Memory Size",
+      "transparent": true,
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "avg"
     }
   ],
-  "refresh": "30s",
+  "refresh": "5s",
   "schemaVersion": 19,
   "style": "dark",
   "tags": [],
@@ -495,5 +671,5 @@
   "timezone": "",
   "title": "ACS Interface",
   "uid": "rBhCpJWMk",
-  "version": 5
+  "version": 3
 }

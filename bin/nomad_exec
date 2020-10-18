@@ -3,7 +3,7 @@
 ## usage
 # bin/nomad_exec vmck database postgres bash
 
-export NOMAD_ADDR=http://10.42.2.1:4646
+export NOMAD_ADDR=http://10.42.1.1:4646
 job=$1
 shift
 group=$1

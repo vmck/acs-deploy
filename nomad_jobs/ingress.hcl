@@ -9,8 +9,11 @@ job "ingress" {
   }
 
   group "ingress" {
-
     task "traefik" {
+      constraint {
+        attribute = "${meta.vmck_ui}"
+        operator = "is_set"
+      }
 
       driver = "docker"
 
@@ -33,24 +36,24 @@ job "ingress" {
           logLevel = "INFO"
           debug = false
           defaultEntryPoints = ["http", "https"]
-          
+
           [api]
           entryPoint = "admin"
-          
+
           [entryPoints]
             [entryPoints.http]
             address = ":80"
-          
+
             [entryPoints.http.redirect]
             entryPoint = "https"
-          
+
             [entryPoints.admin]
             address = ":8080"
-          
+
             [entryPoints.https]
             address = ":443"
               [entryPoints.https.tls]
-          
+
           [acme]
           email = "alex@grep.ro"
           entryPoint = "https"
@@ -60,12 +63,12 @@ job "ingress" {
           acmeLogging = true
           [acme.httpChallenge]
             entryPoint = "http"
-          
+
           [consulCatalog]
           endpoint = "http://{{ env "attr.unique.network.ip-address" }}:8500"
           prefix = "ingress"
           exposedByDefault = false
-          
+
           [consul]
           endpoint = "http://{{ env "attr.unique.network.ip-address" }}:8500"
           prefix = "ingress/traefik"
