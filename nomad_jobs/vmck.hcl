@@ -3,18 +3,15 @@ job "vmck" {
   type = "service"
 
   constraint {
-    attribute = "${meta.vmck_worker}"
-    operator = "is_set"
+    attribute = "${meta.volumes}"
+    operator  = "is_set"
   }
+
 
   group "imghost" {
     task "nginx" {
       constraint {
-        attribute = "${meta.vmck_ci}"
-        operator  = "is_set"
-      }
-      constrain {
-	attribute = "${meta.volumes}"
+        attribute = "${meta.vmck_ui}"
         operator  = "is_set"
       }
       driver = "docker"
@@ -85,7 +82,7 @@ job "vmck" {
   group "database" {
     task "postgres" {
       constraint {
-        attribute = "${meta.volumes}"
+        attribute = "${meta.vmck_ui}"
         operator  = "is_set"
       }
 
@@ -151,7 +148,7 @@ job "vmck" {
 
     task "vmck" {
       constraint {
-        attribute = "${meta.volumes}"
+        attribute = "${meta.vmck_ui}"
         operator  = "is_set"
       }
       driver = "docker"
