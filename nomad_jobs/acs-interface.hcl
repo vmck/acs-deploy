@@ -90,10 +90,9 @@ job "acs-interface" {
         env = true
       }
       resources {
-        memory = 350
-        cpu = 500
+        memory = 500
+        cpu = 1000
         network {
-          mbits = 1
           port "pg" {
             static = 26669
           }
@@ -114,7 +113,7 @@ job "acs-interface" {
   }
 
   group "acs-interface" {
-    count = 4
+    count = 2
     task "acs-interface" {
       constraint {
         attribute = "${meta.volumes}"
@@ -122,8 +121,9 @@ job "acs-interface" {
       }
       driver = "docker"
       config {
-        image = "vmck/acs-interface:jw-select-backend"
+        image = "vmck/acs-interface:dev"
         dns_servers = ["${attr.unique.network.ip-address}"]
+        force_pull = true
         volumes = [
           "${meta.volumes}/acs-interface:/opt/interface/data",
         ]
@@ -137,6 +137,8 @@ job "acs-interface" {
           ACS_INTERFACE_ADDRESS = "http://{{ env "NOMAD_ADDR_http" }}"
           EVALUATOR_BACKEND = "raw_qemu"
           MANAGER_TAG = "0.4.2"
+          MANAGER_MHZ = "50"
+          MANAGER_MEMORY = "200"
           TOTAL_MACHINES = 20
           APP_THREAD_COUNT = 16
           EOF
@@ -221,7 +223,7 @@ job "acs-interface" {
       }
       resources {
         memory = 300
-        cpu = 1000
+        cpu = 2000
         network {
           port "http" {}
         }
