@@ -9,49 +9,6 @@ job "drone" {
   }
 
   group "drone" {
-    network {
-      port "drone_vault_port" {
-        static = 3000,
-        to = 3000
-      }
-    }
-
-    task "drone-vault" {
-      vault {
-	policies = ["nomad"]
-      }
-      constraint {
-        attribute = "${meta.vmck_worker}"
-        operator = "is_set"
-      }
-
-      driver = "docker"
-      config {
-        image = "drone/vault"
-	ports = ["drone_vault_port"]
-      }
-      env {
-        # Docker machine information
-        DRONE_TRACE = "true"
-        DRONE_LOGS_TRACE = "true"
-        DRONE_SERVER_HOST = "frisbee.grid.pub.ro"
-        VAULT_ADDR = "http://10.42.1.1:8200"
-      }
-      template {
-        data = <<-EOF
-          {{- with secret "kv/drone/vault" }}
-           DRONE_SECRET = {{.Data.secret_plugin | toJSON }}
-          {{- end }}
-        EOF
-        destination = "local/drone-vault.env"
-        env = true
-      }
-      resources {
-        memory = 250
-        cpu = 150
-      }
-    }
-
     task "drone" {
       constraint {
         attribute = "${meta.volumes}"
