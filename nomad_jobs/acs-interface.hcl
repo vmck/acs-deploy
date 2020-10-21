@@ -139,7 +139,7 @@ job "acs-interface" {
           MANAGER_TAG = "0.4.2"
           MANAGER_MHZ = "50"
           MANAGER_MEMORY = "200"
-          TOTAL_MACHINES = 20
+          TOTAL_MACHINES = 4
           APP_THREAD_COUNT = 16
           EOF
           destination = "local/interface.env"
