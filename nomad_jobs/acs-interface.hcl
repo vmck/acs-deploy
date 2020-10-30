@@ -91,7 +91,7 @@ job "acs-interface" {
       }
       resources {
         memory = 500
-        cpu = 1000
+        cpu = 1500
         network {
           port "pg" {
             static = 26669
@@ -134,6 +134,7 @@ job "acs-interface" {
       template {
         data = <<-EOF
           HOSTNAME = "*"
+          PROFILE = "true"
           ACS_INTERFACE_ADDRESS = "http://{{ env "NOMAD_ADDR_http" }}"
           EVALUATOR_BACKEND = "raw_qemu"
           MANAGER_TAG = "0.4.2"
@@ -223,7 +224,7 @@ job "acs-interface" {
       }
       resources {
         memory = 300
-        cpu = 2000
+        cpu = 2750
         network {
           port "http" {}
         }
