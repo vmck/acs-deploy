@@ -121,7 +121,7 @@ job "acs-interface" {
       }
       driver = "docker"
       config {
-        image = "vmck/acs-interface:dev"
+        image = "vmck/acs-interface:v0.7.0"
         dns_servers = ["${attr.unique.network.ip-address}"]
         force_pull = true
         volumes = [
@@ -134,7 +134,7 @@ job "acs-interface" {
       template {
         data = <<-EOF
           HOSTNAME = "*"
-          PROFILE = "true"
+          PROFILE = "false"
           ACS_INTERFACE_ADDRESS = "http://{{ env "NOMAD_ADDR_http" }}"
           EVALUATOR_BACKEND = "raw_qemu"
           MANAGER_TAG = "0.4.2"
@@ -224,7 +224,7 @@ job "acs-interface" {
       }
       resources {
         memory = 300
-        cpu = 2750
+        cpu = 2250
         network {
           port "http" {}
         }
