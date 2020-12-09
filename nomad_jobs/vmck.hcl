@@ -173,7 +173,7 @@ job "vmck" {
           NOMAD_URL = "http://nomad.service.consul:4646"
           VMCK_URL = 'http://{{ env "NOMAD_ADDR_http" }}'
           BACKEND = "qemu"
-          QEMU_CPU_MHZ = 2500
+          QEMU_CPU_MHZ = 2000
           CHECK_SSH_SIGNATURE_TIMEOUT = "1"
           EOF
         destination = "local/vmck.env"
