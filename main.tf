@@ -19,6 +19,10 @@ resource "nomad_job" "acs-interface" {
   jobspec = "${file("${path.module}/nomad_jobs/acs-interface.hcl")}"
 }
 
+resource "nomad_job" "vmck-images-sync" {
+  jobspec = "${file("${path.module}/nomad_jobs/vmck-images-sync.hcl")}"
+}
+
 resource "nomad_job" "ingress" {
   jobspec = "${file("${path.module}/nomad_jobs/ingress.hcl")}"
 }
