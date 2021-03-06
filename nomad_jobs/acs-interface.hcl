@@ -121,7 +121,7 @@ job "acs-interface" {
       }
       driver = "docker"
       config {
-        image = "vmck/acs-interface:v0.7.0"
+        image = "vmck/acs-interface:v0.7.1"
         dns_servers = ["${attr.unique.network.ip-address}"]
         force_pull = true
         volumes = [
